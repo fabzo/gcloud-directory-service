@@ -122,7 +122,7 @@ func (d *DirSync) executeSync() {
 	}
 
 	d.status.SyncInProgress = false
-	d.status.LastSyncDuration = d.status.LastSync.Sub(time.Now())
+	d.status.LastSyncDuration = time.Now().Sub(d.status.LastSync)
 	d.status.NextSync = time.Now().Add(time.Duration(d.syncInterval) * time.Minute)
 }
 
