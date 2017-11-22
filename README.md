@@ -29,3 +29,25 @@ server --help output:
       -l, --storage-location string   Storage location for the directory for faster restores (optional)
       -s, --subject string            The gsuite user to impersonate
       -i, --sync-interval int         Sync interval in minutes. Defaults to 30. (default 30)
+
+
+API endpoints:
+
+    /
+    /api
+        Link list with endpoints
+
+    /api/status
+        Information about the sync status and directory content
+
+    /api/directory
+        The entire directory with group to member mappings
+
+    /api/groups
+        Mapping of group email addresses to group IDs
+
+    /api/members
+        Mapping of member IDs to group IDs they are part of
+
+    /health
+        Always returns 200 OK
