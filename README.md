@@ -9,6 +9,6 @@ Builds:
 Docker:
     
     docker pull fabzo/gcloud-directory-service
-    docker run --rm -it fabzo/gcloud-directory-service --help
+    docker run --rm -it fabzo/gcloud-directory-service server --help
     
 To be extended ...

@@ -28,12 +28,12 @@ var basicAuth string
 func init() {
 	Command.PersistentFlags().StringVarP(&serviceAccount, "service-account", "a", "", "Location of the service account json file")
 	Command.PersistentFlags().StringVarP(&subject, "subject", "s", "", "The gsuite user to impersonate")
-	Command.PersistentFlags().StringVarP(&customerId, "customer-id", "c", "my_customer", "The gsuite customer id. Defaults to my_customer.")
-	Command.PersistentFlags().StringVarP(&domain, "domain", "d", "", "The gsuite domain for which to retrieve the groups. Defaults to ''")
-	Command.PersistentFlags().IntVarP(&syncInterval, "sync-interval", "i", 30, "Sync interval in minutes. Defaults to 30.")
-	Command.PersistentFlags().StringVarP(&basicAuth, "basic-auth", "b", "", "Basic auth login in the form of <username>:<password>. Random login is generated if not set.")
+	Command.PersistentFlags().StringVarP(&customerId, "customer-id", "c", "my_customer", "The gsuite customer id")
+	Command.PersistentFlags().StringVarP(&domain, "domain", "d", "", "The gsuite domain for which to retrieve the groups (default '')")
+	Command.PersistentFlags().IntVarP(&syncInterval, "sync-interval", "i", 30, "Sync interval in minutes")
+	Command.PersistentFlags().StringVarP(&basicAuth, "basic-auth", "b", "", "Basic auth login in the form of <username>:<password>. Random login is generated if not set")
 	Command.PersistentFlags().StringVarP(&storageLocation, "storage-location", "l", "", "Storage location for the directory for faster restores (optional)")
-	Command.PersistentFlags().IntVarP(&port, "port", "p", 8080, "Port for the API (default: 8080)")
+	Command.PersistentFlags().IntVarP(&port, "port", "p", 8080, "Port for the API")
 }
 
 var Command = &cobra.Command{
