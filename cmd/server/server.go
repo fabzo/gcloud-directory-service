@@ -12,6 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/fabzo/gcloud-directory-service/sync"
 	"github.com/fabzo/gcloud-directory-service/utils"
+	"strconv"
 )
 
 var serviceAccount string
@@ -20,6 +21,7 @@ var customerId string
 var domain string
 var syncInterval int
 var storageLocation string
+var port int
 
 var basicAuth string
 
@@ -31,6 +33,7 @@ func init() {
 	Command.PersistentFlags().IntVarP(&syncInterval, "sync-interval", "i", 30, "Sync interval in minutes. Defaults to 30.")
 	Command.PersistentFlags().StringVarP(&basicAuth, "basic-auth", "b", "", "Basic auth login in the form of <username>:<password>. Random login is generated if not set.")
 	Command.PersistentFlags().StringVarP(&storageLocation, "storage-location", "l", "", "Storage location for the directory for faster restores (optional)")
+	Command.PersistentFlags().IntVarP(&port, "port", "p", 8080, "Port for the API (default: 8080)")
 }
 
 var Command = &cobra.Command{
@@ -61,7 +64,7 @@ var Command = &cobra.Command{
 		r.HandleFunc("/directory", auth(directoryHandler(dirSync)))
 		r.HandleFunc("/groups", auth(groupsHandler(dirSync)))
 		r.HandleFunc("/members", auth(membersHandler(dirSync)))
-		http.ListenAndServe(":8080", r)
+		http.ListenAndServe(":" + strconv.Itoa(port), r)
 
 	},
 }
