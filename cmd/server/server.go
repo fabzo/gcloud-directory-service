@@ -61,10 +61,11 @@ var Command = &cobra.Command{
 
 		r := mux.NewRouter()
 		r.HandleFunc("/", auth(rootHandler()))
-		r.HandleFunc("/status", auth(statusHandler(dirSync)))
-		r.HandleFunc("/directory", auth(directoryHandler(dirSync)))
-		r.HandleFunc("/groups", auth(groupsHandler(dirSync)))
-		r.HandleFunc("/members", auth(membersHandler(dirSync)))
+		r.HandleFunc("/api", auth(rootHandler()))
+		r.HandleFunc("/api/status", auth(statusHandler(dirSync)))
+		r.HandleFunc("/api/directory", auth(directoryHandler(dirSync)))
+		r.HandleFunc("/api/groups", auth(groupsHandler(dirSync)))
+		r.HandleFunc("/api/members", auth(membersHandler(dirSync)))
 		r.HandleFunc("/health", healthHandler())
 		http.ListenAndServe(":"+strconv.Itoa(port), r)
 
@@ -92,10 +93,12 @@ func rootHandler() func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`
 <a href="/">/</a></br>
-<a href="/status">/status</a></br>
-<a href="/directory">/directory</a></br>
-<a href="/groups">/groups</a></br>
-<a href="/members">/members</a>
+<a href="/api">/api</a></br>
+<a href="/api/status">/api/status</a></br>
+<a href="/api/directory">/api/directory</a></br>
+<a href="/api/groups">/api/groups</a></br>
+<a href="/api/members">/api/members</a></br>
+<a href="/health">/health</a></br>
 		`))
 	}
 }
