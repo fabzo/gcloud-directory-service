@@ -11,6 +11,7 @@ env:
   - secure: UNNCS9OlIzsDwKNwU8liu2sbZv2hCx97Z7qQgr9TuTkC/yx4DUjZjCs75OlDHuAgqMczDc2QeojJo4MwScvV6srnprCJjvtf/IjVIhi4An5OhcDrRzlhtdYNjJJdtEkCVsVmdhzb9GMcv0fqhUNxDq8JOnAnwyQGVUgAQ9Rvul5XObtXnf6cIF2yMnsKcy3Hs7cCES9sbZwAuVlwolvVORz7GnsJOq+8be5rjNRpjM5yiPu6gRDCiBPespvRnNJQPukc+j0QEOm4U+GTzbnBbzQOrEeYvOpsikVOJKt6RkBo0Jv5JFkh5HxoY4/ywXB6mFVhsbMF+Wi9PscJxsCXGvmmaTUBFAU2u59oA1SV6uIHkemNN9BZd0OGkMwNdC5GOVwz7rWrmXw6mV5P2RioxBsSLAEwY5uIHIIsXed17xiHrKONGGep6233pgmZhfcPPq+uwt46RNm6PMBUv6u0ZmiVzyiV6xlp9THg3KL5r8BxJMq9ygJy3n2y/nnU8X/RQG1DVX+RIbO+HNH+mKzE8YD3bGDHAkX0DD+4x2GpcCFgvPu/Jrcw1r11zSdirwG+eppznB2RT9eaGZQ7yZlDMZ0b6awtVZ+l7tWGxhIOGT8z8T/O4A59npxZV1dBuYeajKWOyXjJph7EQFu60/ohOcYgj6/ORX5/xemFMyjcpGQ=
 script:
 - go build
+- curl -o ca-certificates.crt https://curl.haxx.se/ca/cacert.pem
 - export TAG=`if [[ $TRAVIS_PULL_REQUEST == "false" ]] && [[ $TRAVIS_BRANCH == "master"
   ]]; then echo "latest"; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi`
 - docker build -t $REPO:$TAG -f Dockerfile .
