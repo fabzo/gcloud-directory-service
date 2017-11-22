@@ -52,6 +52,25 @@ Docker Example:
       -i, --sync-interval int         Sync interval in minutes. Defaults to 30. (default 30)
 
 
+### Using the Go client library
+
+There is a simple implementation of a client library in directory_client that does nothing more than to retrieve the entire directory.
+It provides all information of the /api/directory, /api/groups and /api/members endpoints locally.
+
+    func main() {
+        client := directory_client.New("https://directory-service.url", "username", "password")
+        // Call SyncDirectory to update the local directory copy
+        err := client.SyncDirectory()
+        if err != nil {
+            fmt.Errorf("Failed: %v\n", err)
+            os.Exit(1)
+        }
+
+        json, _ := json.Marshal(client.Directory())
+
+        fmt.Printf("Directory: %s\n", json)
+    }
+
 ### API endpoints:
 
     /
