@@ -5,10 +5,10 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/fabzo/gcloud-directory-service/sync/google/directory"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/oauth2/jwt"
 	"google.golang.org/api/admin/directory/v1"
-	"github.com/fabzo/gcloud-directory-service/sync/google/directory"
 )
 
 type Client struct {

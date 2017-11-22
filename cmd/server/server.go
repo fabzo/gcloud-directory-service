@@ -1,18 +1,19 @@
 package server
 
 import (
-	"net/http"
-	"fmt"
-	"os"
 	"encoding/json"
+	"fmt"
+	"net/http"
+	"os"
 	"strings"
 
-	"github.com/spf13/cobra"
-	"github.com/gorilla/mux"
-	"github.com/sirupsen/logrus"
+	"strconv"
+
 	"github.com/fabzo/gcloud-directory-service/sync"
 	"github.com/fabzo/gcloud-directory-service/utils"
-	"strconv"
+	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 )
 
 var serviceAccount string
@@ -32,7 +33,7 @@ func init() {
 	Command.PersistentFlags().StringVarP(&domain, "domain", "d", "", "The gsuite domain for which to retrieve the groups (default '')")
 	Command.PersistentFlags().IntVarP(&syncInterval, "sync-interval", "i", 30, "Sync interval in minutes")
 	Command.PersistentFlags().StringVarP(&basicAuth, "basic-auth", "b", "", "Basic auth login in the form of <username>:<password>. Random login is generated if not set")
-	Command.PersistentFlags().StringVarP(&storageLocation, "storage-location", "l", "", "Storage location for the directory for faster restores (optional)")
+	Command.PersistentFlags().StringVarP(&storageLocation, "storage-location", "l", "", "Storage location for faster restores (optional)")
 	Command.PersistentFlags().IntVarP(&port, "port", "p", 8080, "Port for the API")
 }
 
@@ -64,7 +65,8 @@ var Command = &cobra.Command{
 		r.HandleFunc("/directory", auth(directoryHandler(dirSync)))
 		r.HandleFunc("/groups", auth(groupsHandler(dirSync)))
 		r.HandleFunc("/members", auth(membersHandler(dirSync)))
-		http.ListenAndServe(":" + strconv.Itoa(port), r)
+		r.HandleFunc("/health", healthHandler())
+		http.ListenAndServe(":"+strconv.Itoa(port), r)
 
 	},
 }
@@ -82,7 +84,7 @@ func auth(fn http.HandlerFunc) http.HandlerFunc {
 }
 
 func check(username string, password string) bool {
-	return username + ":" + password == basicAuth;
+	return username+":"+password == basicAuth
 }
 
 func rootHandler() func(w http.ResponseWriter, r *http.Request) {
@@ -95,6 +97,13 @@ func rootHandler() func(w http.ResponseWriter, r *http.Request) {
 <a href="/groups">/groups</a></br>
 <a href="/members">/members</a>
 		`))
+	}
+}
+
+func healthHandler() func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(""))
 	}
 }
 

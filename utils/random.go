@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"time"
 	"math/rand"
+	"time"
 )
 
 // Source: https://stackoverflow.com/a/31832326/2235502

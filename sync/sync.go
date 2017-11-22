@@ -1,15 +1,15 @@
 package sync
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"sync"
 	"time"
-	"io/ioutil"
-	"encoding/json"
 
-	"github.com/sirupsen/logrus"
-	"github.com/fabzo/gcloud-directory-service/sync/google/directory"
 	"github.com/fabzo/gcloud-directory-service/sync/google"
+	"github.com/fabzo/gcloud-directory-service/sync/google/directory"
+	"github.com/sirupsen/logrus"
 )
 
 type DirSync struct {
@@ -168,7 +168,7 @@ func (d *DirSync) persistToDisk(location string) error {
 		return err
 	}
 
-	err = ioutil.WriteFile(location + "/directory.json", data, 0644)
+	err = ioutil.WriteFile(location+"/directory.json", data, 0644)
 	if err != nil {
 		return err
 	}
