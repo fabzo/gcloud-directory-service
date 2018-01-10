@@ -32,13 +32,21 @@ type DirSync struct {
 	status *Status
 }
 
+type Duration struct {
+	time.Duration
+}
+
+func (d Duration) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + d.String() + `"`), nil
+}
+
 type Status struct {
-	LastSync         time.Time     `json:"last_sync"`
-	LastSyncDuration time.Duration `json:"last_sync_duration"`
-	NextSync         time.Time     `json:"next_sync"`
-	KnownGroups      int           `json:"known_groups"`
-	KnownUsers       int           `json:"known_users"`
-	SyncInProgress   bool          `json:"sync_in_progress"`
+	LastSync         time.Time `json:"last_sync"`
+	LastSyncDuration Duration  `json:"last_sync_duration"`
+	NextSync         time.Time `json:"next_sync"`
+	KnownGroups      int       `json:"known_groups"`
+	KnownUsers       int       `json:"known_users"`
+	SyncInProgress   bool      `json:"sync_in_progress"`
 }
 
 func New(serviceAccountFile string, subject string, customerId string, domain string, syncInterval int, storageLocation string) (*DirSync, error) {
@@ -122,7 +130,7 @@ func (d *DirSync) executeSync() {
 	}
 
 	d.status.SyncInProgress = false
-	d.status.LastSyncDuration = time.Now().Sub(d.status.LastSync)
+	d.status.LastSyncDuration = Duration{time.Since(d.status.LastSync)}
 	d.status.NextSync = time.Now().Add(time.Duration(d.syncInterval) * time.Minute)
 }
 
