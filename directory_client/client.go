@@ -4,9 +4,11 @@ import (
 	"net/http"
 	"net/url"
 
+	"encoding/json"
+	"fmt"
 	"github.com/fabzo/gcloud-directory-service/sync/google/directory"
 	"io/ioutil"
-	"encoding/json"
+	"time"
 )
 
 type Client struct {
@@ -16,18 +18,17 @@ type Client struct {
 
 	httpClient *http.Client
 
-
 	groups        map[string]*directory.Group
 	memberToGroup map[string][]string
 	mailToGroup   map[string]string
 }
 
 type cookieJar struct {
-	jar map[string] []*http.Cookie
+	jar map[string][]*http.Cookie
 }
 
-func (p* cookieJar) SetCookies(u *url.URL, cookies []*http.Cookie) {
-	p.jar [u.Host] = cookies
+func (p *cookieJar) SetCookies(u *url.URL, cookies []*http.Cookie) {
+	p.jar[u.Host] = cookies
 }
 
 func (p *cookieJar) Cookies(u *url.URL) []*http.Cookie {
@@ -36,19 +37,20 @@ func (p *cookieJar) Cookies(u *url.URL) []*http.Cookie {
 
 func New(url string, username string, password string) *Client {
 	return &Client{
-		url:        url,
-		username:   username,
-		password:   password,
+		url:      url,
+		username: username,
+		password: password,
 		httpClient: &http.Client{
 			Jar: &cookieJar{
-				jar: make(map[string] []*http.Cookie),
+				jar: make(map[string][]*http.Cookie),
 			},
+			Timeout: time.Second * 15,
 		},
 	}
 }
 
 func (c *Client) SyncDirectory() error {
-	req, err := http.NewRequest("GET", c.url + "/api/directory", nil)
+	req, err := http.NewRequest("GET", c.url+"/api/directory", nil)
 	req.SetBasicAuth(c.username, c.password)
 
 	resp, err := c.httpClient.Do(req)
@@ -60,6 +62,10 @@ func (c *Client) SyncDirectory() error {
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("directory service request failed %d: %s", resp.StatusCode, string(data))
 	}
 
 	var groups map[string]*directory.Group
