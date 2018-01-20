@@ -43,36 +43,29 @@ func (c *Service) RetrieveDirectory() (map[string]*Group, error) {
 }
 
 func ToMemberGroupMapping(groups map[string]*Group) map[string][]string {
-	members := map[string][]string{}
-
+	memberIdToGroupIds := make(map[string]map[string]struct{})
 	for _, group := range groups {
-		updateMemberMap(members, groups, group, group.Id)
-	}
-
-	return members
-}
-
-func updateMemberMap(members map[string][]string, groups map[string]*Group, group *Group, groupId string) {
-	for memberId, _ := range group.Members {
-		if _, ok := groups[memberId]; ok {
-			updateMemberMap(members, groups, groups[memberId], groupId)
-		} else {
-			if groups, ok := members[memberId]; ok {
-				members[memberId] = appendUnique(groups, groupId)
-			} else {
-				members[memberId] = []string{groupId}
-			}
+		groupId := group.Id
+		for _, member := range group.Members {
+			addMemberGroup(memberIdToGroupIds, member.Id, groupId)
 		}
 	}
+	result := map[string][]string{}
+	for memberId, groupIdsMap := range memberIdToGroupIds {
+		groups := make([]string, 0)
+		for groupId := range groupIdsMap {
+			groups = append(groups, groupId)
+		}
+		result[memberId] = groups
+	}
+	return result
 }
 
-func appendUnique(groupIds []string, groupId string) []string {
-	for _, id := range groupIds {
-		if id == groupId {
-			return groupIds
-		}
+func addMemberGroup(memberIdToGroupIds map[string]map[string]struct{}, memberId string, groupId string) {
+	if _, ok := memberIdToGroupIds[memberId]; !ok {
+		memberIdToGroupIds[memberId] = make(map[string]struct{})
 	}
-	return append(groupIds, groupId)
+	memberIdToGroupIds[memberId][groupId] = struct{}{}
 }
 
 func ToEmailGroupMapping(groups map[string]*Group) map[string]string {
@@ -81,6 +74,9 @@ func ToEmailGroupMapping(groups map[string]*Group) map[string]string {
 		emails[group.Email] = id
 		for _, alias := range group.Aliases {
 			emails[alias] = id
+		}
+		for _, member := range group.Members {
+			emails[member.Email] = member.Id
 		}
 	}
 	return emails
