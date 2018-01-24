@@ -18,9 +18,9 @@ type Client struct {
 
 	httpClient *http.Client
 
-	groups        map[string]*directory.Group
-	memberToGroup map[string][]string
-	mailToGroup   map[string]string
+	groups             map[string]*directory.Group
+	memberIdToGroupIds map[string][]string
+	emailToMember      map[string]directory.MemberType
 }
 
 type cookieJar struct {
@@ -75,8 +75,8 @@ func (c *Client) SyncDirectory() error {
 	}
 
 	c.groups = groups
-	c.mailToGroup = directory.ToEmailGroupMapping(groups)
-	c.memberToGroup = directory.ToMemberGroupMapping(groups)
+	c.emailToMember = directory.ToEmailMemberMapping(groups)
+	c.memberIdToGroupIds = directory.ToMemberIdGroupIdsMapping(groups)
 
 	return nil
 }
@@ -85,10 +85,10 @@ func (c *Client) Directory() map[string]*directory.Group {
 	return c.groups
 }
 
-func (c *Client) MemberToGroupMapping() map[string][]string {
-	return c.memberToGroup
+func (c *Client) MemberIdToGroupIdsMapping() map[string][]string {
+	return c.memberIdToGroupIds
 }
 
-func (c *Client) MailToGroupMapping() map[string]string {
-	return c.mailToGroup
+func (c *Client) EmailToMemberMapping() map[string]directory.MemberType {
+	return c.emailToMember
 }

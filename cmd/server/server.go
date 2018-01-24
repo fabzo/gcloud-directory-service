@@ -140,7 +140,7 @@ func directoryHandler(dirSync *sync.DirSync) func(w http.ResponseWriter, r *http
 
 func groupsHandler(dirSync *sync.DirSync) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		groups := dirSync.MailToGroupMapping()
+		groups := dirSync.EmailToMemberMapping()
 		if groups == nil {
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("{}"))
@@ -157,7 +157,7 @@ func groupsHandler(dirSync *sync.DirSync) func(w http.ResponseWriter, r *http.Re
 
 func membersHandler(dirSync *sync.DirSync) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		members := dirSync.MemberToGroupMapping()
+		members := dirSync.MemberIdToGroupIdsMapping()
 		if members == nil {
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("{}"))
