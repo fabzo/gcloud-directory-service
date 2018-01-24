@@ -25,9 +25,9 @@ type DirSync struct {
 
 	googleClient *google.Client
 
-	groups        map[string]*directory.Group
-	memberToGroup map[string][]string
-	mailToGroup   map[string]string
+	groups             map[string]*directory.Group
+	memberIdToGroupIds map[string][]string
+	emailToMember      map[string]directory.MemberType
 
 	status *Status
 }
@@ -145,8 +145,9 @@ func (d *DirSync) updateStatusCounter(groups map[string]*directory.Group) {
 
 func (d *DirSync) updateGroups(groups map[string]*directory.Group) {
 	d.groups = groups
-	d.mailToGroup = directory.ToEmailGroupMapping(groups)
-	d.memberToGroup = directory.ToMemberGroupMapping(groups)
+
+	d.emailToMember = directory.ToEmailMemberMapping(groups)
+	d.memberIdToGroupIds = directory.ToMemberIdGroupIdsMapping(groups)
 	d.updateStatusCounter(groups)
 }
 
@@ -158,12 +159,12 @@ func (d *DirSync) Directory() map[string]*directory.Group {
 	return d.groups
 }
 
-func (d *DirSync) MemberToGroupMapping() map[string][]string {
-	return d.memberToGroup
+func (d *DirSync) MemberIdToGroupIdsMapping() map[string][]string {
+	return d.memberIdToGroupIds
 }
 
-func (d *DirSync) MailToGroupMapping() map[string]string {
-	return d.mailToGroup
+func (d *DirSync) EmailToMemberMapping() map[string]directory.MemberType {
+	return d.emailToMember
 }
 
 func (d *DirSync) persistToDisk(location string) error {

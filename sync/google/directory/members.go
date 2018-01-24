@@ -11,6 +11,11 @@ type Member struct {
 	Type   string `json:"type,omitempty"`
 }
 
+type MemberType struct {
+	Id   string `json:"id,omitempty"`
+	Type string `json:"type,omitempty"`
+}
+
 func (c *Service) retrieveMembers(groupId string) (map[string]*Member, error) {
 	completeMembers := map[string]*Member{}
 	nextPageToken := ""
