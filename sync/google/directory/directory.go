@@ -87,7 +87,7 @@ func ToEmailMemberMapping(groups map[string]*Group) map[string]MemberType {
 		}
 		for _, member := range group.Members {
 			emails[member.Email] = MemberType{
-				Id:   id,
+				Id:   member.Id,
 				Type: member.Type,
 			}
 		}
