@@ -20,6 +20,7 @@ var RootCmd = &cobra.Command{
 
 func init() {
 	RootCmd.AddCommand(server.Command)
+	RootCmd.AddCommand(server.Mock)
 }
 
 func main() {

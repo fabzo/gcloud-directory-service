@@ -12,7 +12,15 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type DirSync struct {
+type DirSync interface {
+	RunSyncLoop()
+	Status() *Status
+	Directory() map[string]*directory.Group
+	MemberIdToGroupIdsMapping() map[string][]string
+	EmailToMemberMapping() map[string]directory.MemberType
+}
+
+type dirSync struct {
 	serviceAccountFile string
 	subject            string
 	customerId         string
@@ -49,7 +57,7 @@ type Status struct {
 	SyncInProgress   bool      `json:"sync_in_progress"`
 }
 
-func New(serviceAccountFile string, subject string, customerId string, domain string, syncInterval int, storageLocation string) (*DirSync, error) {
+func New(serviceAccountFile string, subject string, customerId string, domain string, syncInterval int, storageLocation string) (DirSync, error) {
 
 	if serviceAccountFile == "" {
 		return nil, fmt.Errorf("service account location cannot be empty")
@@ -61,7 +69,7 @@ func New(serviceAccountFile string, subject string, customerId string, domain st
 		return nil, fmt.Errorf("sync interval cannot be lower than 5 minutes")
 	}
 
-	dirSync := &DirSync{
+	dirSync := &dirSync{
 		serviceAccountFile: serviceAccountFile,
 		subject:            subject,
 		customerId:         customerId,
@@ -80,7 +88,7 @@ func New(serviceAccountFile string, subject string, customerId string, domain st
 	return dirSync, nil
 }
 
-func (d *DirSync) RunSyncLoop() {
+func (d *dirSync) RunSyncLoop() {
 	d.syncRunningMutex.Lock()
 	defer d.syncRunningMutex.Unlock()
 	if !d.syncRunning {
@@ -89,7 +97,7 @@ func (d *DirSync) RunSyncLoop() {
 	}
 }
 
-func (d *DirSync) syncLoop() {
+func (d *dirSync) syncLoop() {
 	for true {
 
 		if d.googleClient == nil {
@@ -113,7 +121,7 @@ func (d *DirSync) syncLoop() {
 	}
 }
 
-func (d *DirSync) executeSync() {
+func (d *dirSync) executeSync() {
 	d.status.LastSync = time.Now()
 	d.status.SyncInProgress = true
 
@@ -134,7 +142,7 @@ func (d *DirSync) executeSync() {
 	d.status.NextSync = time.Now().Add(time.Duration(d.syncInterval) * time.Minute)
 }
 
-func (d *DirSync) updateStatusCounter(groups map[string]*directory.Group) {
+func (d *dirSync) updateStatusCounter(groups map[string]*directory.Group) {
 	d.status.KnownGroups = len(d.groups)
 	userCounter := 0
 	for _, group := range d.groups {
@@ -143,7 +151,7 @@ func (d *DirSync) updateStatusCounter(groups map[string]*directory.Group) {
 	d.status.KnownUsers = userCounter
 }
 
-func (d *DirSync) updateGroups(groups map[string]*directory.Group) {
+func (d *dirSync) updateGroups(groups map[string]*directory.Group) {
 	d.groups = groups
 
 	d.emailToMember = directory.ToEmailMemberMapping(groups)
@@ -151,23 +159,23 @@ func (d *DirSync) updateGroups(groups map[string]*directory.Group) {
 	d.updateStatusCounter(groups)
 }
 
-func (d *DirSync) Status() *Status {
+func (d *dirSync) Status() *Status {
 	return d.status
 }
 
-func (d *DirSync) Directory() map[string]*directory.Group {
+func (d *dirSync) Directory() map[string]*directory.Group {
 	return d.groups
 }
 
-func (d *DirSync) MemberIdToGroupIdsMapping() map[string][]string {
+func (d *dirSync) MemberIdToGroupIdsMapping() map[string][]string {
 	return d.memberIdToGroupIds
 }
 
-func (d *DirSync) EmailToMemberMapping() map[string]directory.MemberType {
+func (d *dirSync) EmailToMemberMapping() map[string]directory.MemberType {
 	return d.emailToMember
 }
 
-func (d *DirSync) persistToDisk(location string) error {
+func (d *dirSync) persistToDisk(location string) error {
 	if location == "" {
 		return nil
 	}
@@ -184,7 +192,7 @@ func (d *DirSync) persistToDisk(location string) error {
 	return nil
 }
 
-func (d *DirSync) restoreFromDisk(location string) error {
+func (d *dirSync) restoreFromDisk(location string) error {
 	if location == "" {
 		return nil
 	}

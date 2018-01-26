@@ -110,7 +110,7 @@ func healthHandler() func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func statusHandler(dirSync *sync.DirSync) func(w http.ResponseWriter, r *http.Request) {
+func statusHandler(dirSync sync.DirSync) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := json.NewEncoder(w).Encode(dirSync.Status())
 		if err != nil {
@@ -121,7 +121,7 @@ func statusHandler(dirSync *sync.DirSync) func(w http.ResponseWriter, r *http.Re
 	}
 }
 
-func directoryHandler(dirSync *sync.DirSync) func(w http.ResponseWriter, r *http.Request) {
+func directoryHandler(dirSync sync.DirSync) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		groups := dirSync.Directory()
 		if groups == nil {
@@ -138,7 +138,7 @@ func directoryHandler(dirSync *sync.DirSync) func(w http.ResponseWriter, r *http
 	}
 }
 
-func groupsHandler(dirSync *sync.DirSync) func(w http.ResponseWriter, r *http.Request) {
+func groupsHandler(dirSync sync.DirSync) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		groups := dirSync.EmailToMemberMapping()
 		if groups == nil {
@@ -155,7 +155,7 @@ func groupsHandler(dirSync *sync.DirSync) func(w http.ResponseWriter, r *http.Re
 	}
 }
 
-func membersHandler(dirSync *sync.DirSync) func(w http.ResponseWriter, r *http.Request) {
+func membersHandler(dirSync sync.DirSync) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		members := dirSync.MemberIdToGroupIdsMapping()
 		if members == nil {
